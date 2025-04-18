@@ -4,7 +4,7 @@ import Form from 'next/form'
 export default function Home() {
   return (
     <div className="flex flex-col items-center justify-items-center gap-10 w-full lg:w-[calc(100% - 300px)] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 items-center">
+      <div className="flex flex-col gap-8 items-center">
         <div className="flex justify-between items-center gap-5">
           <IconNotebook size={60} color="white" />
           <p className="text-2xl font-semibold">To-Do List Website</p>
@@ -13,6 +13,16 @@ export default function Home() {
           action="/"
           className="flex flex-col items-center gap-6 p-4 border-2 border-stone-500 rounded-lg bg-stone-900"
         >
+          <div className="flex flex-col gap-2">
+            <label htmlFor="email">Nama</label>
+            <input
+              type="text"
+              name="nama"
+              id="Nama"
+              className="border-2 border-stone-500 rounded-lg p-2"
+              placeholder="Nama"
+            />
+          </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="email">Email</label>
             <input
@@ -34,17 +44,9 @@ export default function Home() {
             />
           </div>
           <button type="submit" className="w-full rounded-lg p-2 bg-green-700">
-            Sign In
+            Create Account
           </button>
         </Form>
-      </main>
-      <div className="flex flex-col row-start-3 ">
-        <p>
-          Dont have an account?{' '}
-          <a href="/create" className="text-blue-500">
-            Create Account
-          </a>
-        </p>
       </div>
     </div>
   )
