@@ -1,4 +1,6 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'primereact/resources/themes/saga-blue/theme.css' layer(primereact);
+@import 'bootstrap/dist/css/bootstrap.min.css';
 
 :root {
   --background: #ffffff;
@@ -12,10 +14,10 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: light) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #ededed;
+    --foreground: #0a0a0a;
   }
 }
 
