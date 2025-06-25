@@ -1,51 +1,11 @@
-import { IconNotebook } from '@tabler/icons-react'
-import Form from 'next/form'
+import LoginForm from './components/loginForm'
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-items-center gap-10 w-full lg:w-[calc(100% - 300px)] font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 items-center">
-        <div className="flex justify-between items-center gap-5">
-          <IconNotebook size={60} color="white" />
-          <p className="text-2xl font-semibold">To-Do List Website</p>
-        </div>
-        <Form
-          action="/"
-          className="flex flex-col items-center gap-6 p-4 border-2 border-stone-500 rounded-lg bg-stone-900"
-        >
-          <div className="flex flex-col gap-2">
-            <label htmlFor="email">Email</label>
-            <input
-              type="text"
-              name="email"
-              id="email"
-              className="border-2 border-stone-500 rounded-lg p-2"
-              placeholder="E-mail"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label htmlFor="password">Password</label>
-            <input
-              type="text"
-              name="password"
-              id="password"
-              className="border-2 border-stone-500 rounded-lg p-2"
-              placeholder="Password"
-            />
-          </div>
-          <button type="submit" className="w-full rounded-lg p-2 bg-green-700">
-            Sign In
-          </button>
-        </Form>
-      </main>
-      <div className="flex flex-col row-start-3 ">
-        <p>
-          Dont have an account?{' '}
-          <a href="/create" className="text-blue-500">
-            Create Account
-          </a>
-        </p>
+    <main className="flex items-center justify-center w-full h-screen lg:w-[calc(100% - 50px)] p-4 md:p-10 font-[family-name:var(--font-geist-sans)]">
+      <div className="p-4 shadow-xl rounded-xl bg-white">
+        <LoginForm />
       </div>
-    </div>
+    </main>
   )
 }
