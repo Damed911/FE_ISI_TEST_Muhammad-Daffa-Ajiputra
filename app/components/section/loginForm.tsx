@@ -1,6 +1,5 @@
 'use client'
 
-import { IconAlertCircle } from '@tabler/icons-react'
 import { redirect } from 'next/navigation'
 import { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
@@ -35,7 +34,7 @@ export default function LoginForm() {
   }
 
   return (
-    <Form className="flex flex-col gap-3" onSubmit={login}>
+    <Form className="flex flex-col w-full gap-3" onSubmit={login}>
       <Form.Group
         className="flex flex-col gap-2"
         controlId="controlFormUsername"
@@ -47,14 +46,12 @@ export default function LoginForm() {
           value={email}
           onBlur={() => setFilledEmail(true)}
           onChange={(e) => setEmail(e.target.value)}
+          isInvalid={isInvalidEmail}
           required
         />
-        {isInvalidEmail && (
-          <div className="flex items-center gap-2">
-            <IconAlertCircle color="red" />
-            <span className="text-red-500 text-sm">Field is required</span>
-          </div>
-        )}
+        <Form.Control.Feedback type="invalid">
+          Field is required
+        </Form.Control.Feedback>
       </Form.Group>
       <Form.Group
         className="flex flex-col gap-2"
@@ -67,16 +64,12 @@ export default function LoginForm() {
           value={password}
           onBlur={() => setFilledPassword(true)}
           onChange={(e) => setPassword(e.target.value)}
+          isInvalid={isInvalidPassword}
           required
         />
-        {isInvalidPassword && (
-          <div className="flex gap-2 items-center">
-            <IconAlertCircle color="red" />
-            <span className="text-red-500" color="red">
-              Field is required
-            </span>
-          </div>
-        )}
+        <Form.Control.Feedback type="invalid">
+          Field is required
+        </Form.Control.Feedback>
       </Form.Group>
       <Button
         type="submit"
