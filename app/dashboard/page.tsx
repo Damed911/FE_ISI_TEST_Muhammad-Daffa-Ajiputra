@@ -1,6 +1,6 @@
-import { IconChevronDown } from '@tabler/icons-react'
 import type { Metadata } from 'next'
 import ListCommentTable from '../components/section/listCommentTable'
+import DropdownMenu from '../components/ui-custom/dropdownMenu'
 
 export const metadata: Metadata = {
   title: 'Dashboard',
@@ -28,10 +28,7 @@ export default async function Dashboard() {
     <div className="w-full h-screen flex flex-col gap-8 p-4 md:p-10">
       <div className="flex gap-3 justify-between items-center">
         <span className="font-semibold">List comment</span>
-        <div className="flex gap-2 items-center">
-          <span className="text-lg font-medium">Menu</span>
-          <IconChevronDown size={16} />
-        </div>
+        <DropdownMenu />
       </div>
       <ListCommentTable data={listComment} />
     </div>

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap'
 import { listCommentTable } from '../section/listCommentTable'
 import { toast } from 'react-toastify'
+import { z } from 'zod/v4'
 
 export default function AddComment({
   listComment,
@@ -18,19 +19,24 @@ export default function AddComment({
   const [email, setEmail] = useState<string>('')
   const [body, setBody] = useState<string>('')
 
-  const [filledName, setFilledName] = useState<boolean>(false)
-  const [filledEmail, setFilledEmail] = useState<boolean>(false)
-  const [filledBody, setFilledBody] = useState<boolean>(false)
+  const [filledName, setFilledName] = useState<boolean>(true)
+  const [filledEmail, setFilledEmail] = useState<boolean>(true)
+  const [filledBody, setFilledBody] = useState<boolean>(true)
 
-  const isInvalidName = filledName && name.trim() === ''
-  const isInvalidBody = filledBody && body.trim() === ''
-  const emailValidation = filledEmail && email.trim() === ''
+  const [validateEmail, setValidateEmail] = useState<boolean>(true)
+
+  const inputSchema = z.object({
+    name: z.string().min(1, { error: "Name can't empty" }),
+    email: z.email("Input isn't an email"),
+    body: z.string().min(1, { error: "Body can't empty" }),
+  })
 
   const closeModal = () => {
     setShowModal(false)
-    setFilledBody(false)
-    setFilledEmail(false)
-    setFilledName(false)
+    setFilledBody(true)
+    setFilledEmail(true)
+    setFilledName(true)
+    setValidateEmail(true)
     setName('')
     setEmail('')
     setBody('')
@@ -44,19 +50,41 @@ export default function AddComment({
       body: body,
     }
 
-    setListComment((prev) => [...prev, data])
+    if (name === '') {
+      setFilledName(false)
+    }
+    if (email === '') {
+      setFilledEmail(false)
+    }
+    if (body === '') {
+      setFilledBody(false)
+    }
+    if (name !== '' && email !== '' && body !== '') {
+      const validate = inputSchema.safeParse({
+        name: name,
+        email: email,
+        body: body,
+      })
 
-    toast.success('Comment succesfully created', {
-      autoClose: 2500,
-      theme: 'colored',
-    })
-    setShowModal(false)
-    setFilledBody(false)
-    setFilledEmail(false)
-    setFilledName(false)
-    setName('')
-    setEmail('')
-    setBody('')
+      if (validate.success) {
+        setListComment((prev) => [...prev, data])
+
+        toast.success('Comment succesfully created', {
+          autoClose: 2500,
+          theme: 'colored',
+        })
+        setShowModal(false)
+        setFilledBody(false)
+        setFilledEmail(false)
+        setFilledName(false)
+        setName('')
+        setEmail('')
+        setBody('')
+      } else {
+        setFilledEmail(false)
+        setValidateEmail(false)
+      }
+    }
   }
 
   return (
@@ -76,9 +104,11 @@ export default function AddComment({
                 type="text"
                 required
                 value={name}
-                onBlur={() => setFilledName(true)}
-                onChange={(e) => setName(e.target.value)}
-                isInvalid={isInvalidName}
+                onChange={(e) => {
+                  setName(e.target.value)
+                  setFilledName(true)
+                }}
+                isInvalid={!filledName}
               />
               <Form.Control.Feedback type="invalid">
                 Field is required
@@ -90,12 +120,15 @@ export default function AddComment({
                 type="email"
                 required
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onBlur={() => setFilledEmail(true)}
-                isInvalid={emailValidation}
+                onChange={(e) => {
+                  setEmail(e.target.value)
+                  setFilledEmail(true)
+                  setValidateEmail(true)
+                }}
+                isInvalid={!filledEmail}
               />
               <Form.Control.Feedback type="invalid">
-                Field is required
+                {!validateEmail ? 'Enter a valid email' : 'Field is required'}
               </Form.Control.Feedback>
             </Form.Group>
             <Form.Group>
@@ -105,9 +138,11 @@ export default function AddComment({
                 rows={4}
                 required
                 value={body}
-                onBlur={() => setFilledBody(true)}
-                onChange={(e) => setBody(e.target.value)}
-                isInvalid={isInvalidBody}
+                onChange={(e) => {
+                  setBody(e.target.value)
+                  setFilledBody(true)
+                }}
+                isInvalid={!filledBody}
               />
               <Form.Control.Feedback type="invalid">
                 Field is required
@@ -119,11 +154,7 @@ export default function AddComment({
           <Button variant="danger" onClick={closeModal}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={name === '' || email === '' || body === ''}
-            onClick={handleAddComment}
-          >
+          <Button type="submit" onClick={handleAddComment}>
             Create
           </Button>
         </Modal.Footer>

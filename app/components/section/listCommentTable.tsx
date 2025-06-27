@@ -1,6 +1,10 @@
 'use client'
 
-import { DataTable, DataTableFilterMeta } from 'primereact/datatable'
+import {
+  DataTable,
+  DataTableFilterMeta,
+  DataTablePageEvent,
+} from 'primereact/datatable'
 import { Column } from 'primereact/column'
 import { useState } from 'react'
 import { FilterMatchMode } from 'primereact/api'
@@ -23,6 +27,9 @@ export default function ListCommentTable({
   const [filter, setFilter] = useState<DataTableFilterMeta>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   })
+
+  const [first, setFirst] = useState(0)
+  const [rows, setRows] = useState(10)
 
   const [listComment, setListComment] = useState<listCommentTable[]>(data)
   const [search, setSearch] = useState<string>('')
@@ -63,13 +70,21 @@ export default function ListCommentTable({
     )
   }
 
+  const handlePageChange = (e: DataTablePageEvent) => {
+    setFirst(e.first)
+    setRows(e.rows)
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   return (
     <>
       <AddComment listComment={listComment} setListComment={setListComment} />
       <DataTable
         value={listComment}
         paginator
-        rows={10}
+        first={first}
+        rows={rows}
         rowsPerPageOptions={[10, 20, 50]}
         dataKey="id"
         selectionMode="checkbox"
@@ -79,10 +94,27 @@ export default function ListCommentTable({
         globalFilterFields={['name', 'email', 'body']}
         header={header}
         emptyMessage="No comment found"
+        onPage={handlePageChange}
       >
         <Column selectionMode="multiple" headerStyle={{ width: '3rem' }} />
-        <Column field="id" header="idComment" />
-        <Column field="postId" header="postId" />
+        <Column
+          field="id"
+          header="No."
+          body={(data) => {
+            const filteredResults = listComment.filter(
+              (item) =>
+                !search ||
+                item.name.toLowerCase().includes(search.toLowerCase()) ||
+                item.email.toLowerCase().includes(search.toLowerCase()) ||
+                item.body.toLowerCase().includes(search.toLowerCase())
+            )
+            const position = filteredResults.findIndex(
+              (item) => item.id === data.id
+            )
+            return position + 1
+          }}
+          headerStyle={{ width: '3rem' }}
+        />
         <Column field="name" header="name" />
         <Column field="email" header="email" />
         <Column field="body" header="body" />

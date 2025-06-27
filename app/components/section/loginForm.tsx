@@ -4,16 +4,21 @@ import { redirect } from 'next/navigation'
 import { useState } from 'react'
 import { Form, Button } from 'react-bootstrap'
 import { toast } from 'react-toastify'
+import { z } from 'zod/v4'
 
 export default function LoginForm() {
-  const [email, setEmail] = useState<string>('')
+  const [username, setUsername] = useState<string>('')
   const [password, setPassword] = useState<string>('')
 
-  const [filledEmail, setFilledEmail] = useState<boolean>(false)
-  const [filledPassword, setFilledPassword] = useState<boolean>(false)
+  const [filledEmail, setFilledEmail] = useState<boolean>(true)
+  const [filledPassword, setFilledPassword] = useState<boolean>(true)
 
-  const isInvalidEmail = filledEmail && email.trim() === ''
-  const isInvalidPassword = filledPassword && password.trim() === ''
+  const [validatePassword, setValidatePassword] = useState<boolean>(true)
+
+  const loginSchema = z.object({
+    username: z.string(),
+    password: z.string().min(8, { error: 'Password must have 8 characters' }),
+  })
 
   const login = (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,15 +26,30 @@ export default function LoginForm() {
     const dummyusername = 'adminpsn'
     const dummypassword = 'admin123'
 
-    const isMatched = email === dummyusername && password === dummypassword
-
-    if (isMatched) {
-      return redirect('/dashboard')
-    } else {
-      toast.error("Username or password isn't matched", {
-        autoClose: 2500,
-        theme: 'colored',
+    if (username === '') {
+      setFilledEmail(false)
+    }
+    if (password === '') {
+      setFilledPassword(false)
+    }
+    if (username !== '' && password !== '') {
+      const isMatched = username === dummyusername && password === dummypassword
+      const validate = loginSchema.safeParse({
+        username: username,
+        password: password,
       })
+
+      if (isMatched && validate.success) {
+        redirect('/dashboard')
+      } else if (!validate.success) {
+        setFilledPassword(false)
+        setValidatePassword(false)
+      } else {
+        toast.error("Username or password isn't matched", {
+          autoClose: 2500,
+          theme: 'colored',
+        })
+      }
     }
   }
 
@@ -43,11 +63,12 @@ export default function LoginForm() {
         <Form.Control
           type="text"
           placeholder="Enter Username"
-          value={email}
-          onBlur={() => setFilledEmail(true)}
-          onChange={(e) => setEmail(e.target.value)}
-          isInvalid={isInvalidEmail}
-          required
+          value={username}
+          onChange={(e) => {
+            setUsername(e.target.value)
+            setFilledEmail(true)
+          }}
+          isInvalid={!filledEmail}
         />
         <Form.Control.Feedback type="invalid">
           Field is required
@@ -62,20 +83,20 @@ export default function LoginForm() {
           type="password"
           placeholder="Enter Password"
           value={password}
-          onBlur={() => setFilledPassword(true)}
-          onChange={(e) => setPassword(e.target.value)}
-          isInvalid={isInvalidPassword}
-          required
+          onChange={(e) => {
+            setPassword(e.target.value)
+            setFilledPassword(true)
+            setValidatePassword(true)
+          }}
+          isInvalid={!filledPassword}
         />
         <Form.Control.Feedback type="invalid">
-          Field is required
+          {!validatePassword
+            ? 'Password must have 8 characters'
+            : 'Field is required'}
         </Form.Control.Feedback>
       </Form.Group>
-      <Button
-        type="submit"
-        variant="success"
-        disabled={email === '' || password === ''}
-      >
+      <Button type="submit" variant="success">
         Login
       </Button>
     </Form>
